@@ -99,11 +99,14 @@ export default function Histogram(on, style, config) {
         opactity: 1,
         width: function (d) {
           return _x(d.x1 - d.x0)
-        },
-        x: function (d) {
-          return _x(d.x0)
         }
-      });
+      })
+      .merge(bars)
+        .attrs({
+          x: function (d) {
+            return _x(d.x0)
+          }
+        });
 
     bars.exit().remove();
 

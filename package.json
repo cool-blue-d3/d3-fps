@@ -1,0 +1,41 @@
+{
+  "name": "d3-fps",
+  "version": "1.0.0",
+  "description": "color-coded browser fps meter",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cool-blue-d3/d3-fps.git"
+  },
+  "keywords": [
+    "d3",
+    "fps",
+    "browser"
+  ],
+  "author": "cool.blue@y7mail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cool-blue-d3/d3-fps/issues"
+  },
+  "homepage": "https://github.com/cool-blue-d3/d3-fps#readme",
+  "devDependencies": {
+    "d3-random": "^1.0.3",
+    "mocha": "^3.2.0",
+    "rollup": "^0.41.6",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  },
+  "dependencies": {
+    "d3-array": "^1.1.1",
+    "d3-axis": "^1.0.6",
+    "d3-format": "^1.1.1",
+    "d3-scale": "^1.0.5",
+    "d3-selection": "^1.0.5",
+    "d3-selection-multi": "^1.0.1"
+  }
+}
