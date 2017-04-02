@@ -4,4 +4,4 @@
  *
  * Created by cool.blue on 2/04/2017.
  */
-export * from './src/fps-histogram'
+export * from './src/d3-fps-histogram'

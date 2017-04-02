@@ -1,20 +1,33 @@
 /**
- * fps-histogram
+ * d3-fps-histogram
  */
-import * as d3 from 'd3'
+import {ElapsedTime} from "../src/elapsed-time-3.0";
+import {select} from 'd3-selection'
+import {format} from 'd3-format'
+import {range, max, histogram} from 'd3-array'
+import {scaleLinear} from 'd3-scale'
+import {axisBottom} from 'd3-axis'
 import 'd3-selection-multi'
 import {transplot} from '../src/plot-transform'
 
-d3.ui = d3.ui || {};
-
-d3.ui.FpsMeter = function Histogram(on, style, config) {
+export default function Histogram(on, style, config) {
   let BINS = 30;
   let _style = merge({
       "background-color": 'black',
       display: "inline-block",
       margin: "0 0 0 6px"
     }, style),
-    hist = d3.select(on).append("div")
+    _message = () => "",
+    elapsedTime = ElapsedTime(on, {
+      border: 0, margin: 0, "box-sizing": "border-box",
+      padding: "0 0 0 6px", background: "black", "color": "orange"
+    })
+      .message(function (value) {
+        let this_lap = elapsedTime.lap().lastLap, aveLap = elapsedTime.aveLap(this_lap);
+        return _message.call(elapsedTime, value, this_lap, aveLap)
+          + '\tframe rate:' + format(" >4,.1f")(1 / aveLap) + " fps"
+      }),
+    hist = select(on).append("div")
       .styles(_style)
       .attr("id", "histogram")
       .append("svg")
@@ -24,7 +37,7 @@ d3.ui.FpsMeter = function Histogram(on, style, config) {
       .attrs(transplot(config.height))
       .classed("plot", true)
       .attrs({"fill": "url(#xColor)"}),
-    _xAxis = d3.axisBottom()
+    _xAxis = axisBottom()
       .tickFormat("")
       .ticks(3)
       .tickSize(config.tickSize || 3),
@@ -49,6 +62,7 @@ d3.ui.FpsMeter = function Histogram(on, style, config) {
         id: "xColor", x1: "0%", y1: "0%", x2: "100%", y2: "0%",
         gradientUnits: "userSpaceOnUse"
       });
+
   gradient.append("stop")
     .attrs({"offset": "0%", "stop-color": "red"});
   gradient.append("stop")
@@ -56,23 +70,24 @@ d3.ui.FpsMeter = function Histogram(on, style, config) {
   gradient.append("stop")
     .attrs({"offset": "100%", "stop-color": "green"});
 
-  let x = d3.scaleLinear()
+  let x = scaleLinear()
     .range([0, config.width]);
   if(config.domain){
     x.domain(config.domain)
     _xAxis.scale(x);
     xG.call(xAxis);
   }
-  update(d3.range(BINS));
+  update(range(BINS));
 
   function update(data) {
+
     if (!data || !data.length) return;
-    let _x = config.domain ? x : d3.scaleLinear()
-        .domain([0, d3.max(data, config.values)])
+    let _x = config.domain ? x : scaleLinear()
+        .domain([0, max(data, config.values)])
         .range([0, config.width]),
       h = makeHist(data, config.values, _x),
-      y = d3.scaleLinear()
-        .domain([0, d3.max(h, function (d) {
+      y = scaleLinear()
+        .domain([0, max(h, function (d) {
           return d.length
         })])
         .range([0, config.height]),
@@ -102,10 +117,23 @@ d3.ui.FpsMeter = function Histogram(on, style, config) {
     }
   }
 
+  update.svg = hist;
+  update.message = function(f) {
+    _message = f;
+    return this
+  };
+  update.mark = function(a){
+    elapsedTime.mark(a);
+    if(elapsedTime.aveLap.history.length)
+      update(elapsedTime.aveLap.history);
+  };
+  update.start = function(aveWindow){elapsedTime.start(aveWindow)};
+  update.selection = select(on);
+
   return update;
 
   function makeHist(data, values, x) {
-    return d3.histogram()
+    return histogram()
       .domain(x.domain())
       .thresholds(x.ticks(BINS))(data.map(d => values(d)))
   }
