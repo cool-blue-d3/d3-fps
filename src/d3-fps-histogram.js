@@ -91,17 +91,17 @@ export default function Histogram(on, style, config) {
           return d.length
         })])
         .range([0, config.height]),
-      bars = plot.selectAll(".bar").data(h);
+      bars = plot.selectAll(".bar").data(h),
 
-    bars.enter().append("rect")
+    enter = bars.enter().append("rect")
       .attrs({
         class: "bar",
         opactity: 1,
         width: function (d) {
           return _x(d.x1 - d.x0)
         }
-      })
-      .merge(bars)
+      });
+      (config.domain ? enter : enter.merge(bars))
         .attrs({
           x: function (d) {
             return _x(d.x0)
