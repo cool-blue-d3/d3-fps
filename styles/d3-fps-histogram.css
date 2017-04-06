@@ -1,0 +1,20 @@
+g.plot rect{
+    will-change: transform;
+    perspective: 1000px;
+    transform: translateZ(0);
+
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    -webkit-transition: all 0.1s linear;
+    -moz-transition: all 0.1s linear;
+    -o-transition: all 0.1s linear;
+    transition: all 0.1s linear;
+    outline: 1px red;
+}
+#histogram {
+    margin: 0 0 0 0;
+    position: absolute;
+}

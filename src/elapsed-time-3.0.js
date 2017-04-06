@@ -36,7 +36,6 @@ import 'd3-selection-multi'
 					_style   = merge({
 						margin       : '10px 10px 10px 0',
 						padding      : '3px 3px 3px 3px',
-						display      : 'inline-block',
 						'white-space': 'pre'
 					}, style || {}),
 					_message = function(value) {
@@ -130,18 +129,19 @@ import 'd3-selection-multi'
 		return elapsedTime;
 
 		function _AveLap(aveWindow) {
-			let _i = 0, _aveP = 0, _history = [], _aveWindow = aveWindow || 1000;
+			var _i = 0, _aveP = 0, _history = [], _aveWindow = aveWindow || 1000;
 			function f(this_lap) {
+				var T = 0, l;
 				this_lap = this_lap || this.lap().lastLap;
 				if(!_aveWindow) return _aveP = _i++ ? (_aveP + this_lap / (_i - 1)) * (_i - 1)
 				/ _i : this.lap().lastLap;
 				if(this_lap) _history.push(this_lap);
-				for(; _history.length > _aveWindow;) {
+				for(; (l = _history.length) > _aveWindow;) {
 					_history.shift()
 				}
-				return _history.reduce(function(ave, t, i, h) {
-					return ave + t / h.length
-				}, 0)
+				for(var i = 0; i < l; i++)
+					T = T + _history[i]
+				return l ? T/l : 0;
 			}
 			Object.defineProperties(f, {
 				history:{get: function() {return _history}},

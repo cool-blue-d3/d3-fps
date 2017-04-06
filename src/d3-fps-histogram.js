@@ -1,6 +1,7 @@
 /**
  * d3-fps-histogram
  */
+import '../styles/d3-fps-histogram.css'
 import {ElapsedTime} from "../src/elapsed-time-3.0";
 import {select} from 'd3-selection'
 import {format} from 'd3-format'
@@ -11,28 +12,35 @@ import 'd3-selection-multi'
 import {transplot} from '../src/plot-transform'
 
 export default function Histogram(on, style, config) {
+
   let BINS = 30;
-  let _style = merge({
-      "background-color": 'black',
-      display: "inline-block",
-      margin: "0 0 0 6px"
-    }, style),
-    _message = () => "",
-    elapsedTime = ElapsedTime(on, {
+  let messageStyle = {
       border: 0, margin: 0, "box-sizing": "border-box",
-      padding: "0 0 0 6px", background: "black", "color": "orange"
-    })
-      .message(function (value) {
-        let this_lap = elapsedTime.lap().lastLap, aveLap = elapsedTime.aveLap(this_lap);
-        return _message.call(elapsedTime, value, this_lap, aveLap)
-          + '\tframe rate:' + format(" >4,.1f")(1 / aveLap) + " fps"
+      padding: "0 0 0 6px", background: "black", "color": "orange",
+      position: "absolute", left: config.width + "px"
+    };
+  let _message = () => "",
+    posnContext = select(on).append("div")
+      .attr("id", "metricsBlock")
+      .styles({
+        "white-space": "pre",
+        position: "relative"
       }),
-    hist = select(on).append("div")
-      .styles(_style)
+    wrapper = posnContext.append("div")
+      .attr("id", "metrics")
+      .styles({position: "absolute"}),
+    hist = wrapper.append("div")
+      .styles(style)
       .attr("id", "histogram")
       .append("svg")
-      .styles({display: "inline-block", overflow: "visible", margin: 0})
-      .attrs(merge({fill: "url(#xColor)"}, config)),
+      .styles({overflow: "visible", margin: 0})
+      .attrs(config),
+    elapsedTime = ElapsedTime(on, messageStyle)
+      .message(function (value) {
+        let this_lap = elapsedTime.lap().lastLap, aveLap = elapsedTime.aveLap(this_lap);
+        return (aveLap ? format(" >5,.1f")(1 / aveLap) : format(" >5c")(" ")) + " fps\t" +
+          _message.call(elapsedTime, value, this_lap, aveLap);
+      }),
     plot = hist.append("g")
       .attrs(transplot(config.height))
       .classed("plot", true)
@@ -90,19 +98,21 @@ export default function Histogram(on, style, config) {
         .domain([0, max(h, function (d) {
           return d.length
         })])
-        .range([0, config.height]),
+        .range([0, 1]),
       bars = plot.selectAll(".bar").data(h),
 
     enter = bars.enter().append("rect")
       .attrs({
         class: "bar",
-        opactity: 1,
+        opacity: 1,
         width: function (d) {
           return _x(d.x1 - d.x0)
-        }
-      });
-      (config.domain ? enter : enter.merge(bars))
-        .attrs({
+        },
+        height: config.height
+      })
+      .style('transform', 'scale(1,0)');
+      // (config.domain ? enter : enter.merge(bars))
+    enter.merge(bars).attrs({
           x: function (d) {
             return _x(d.x0)
           }
@@ -110,8 +120,8 @@ export default function Histogram(on, style, config) {
 
     bars.exit().remove();
 
-    bars.attr("height", function (d) {
-      return y(d.length)
+    bars.style("transform", function (d) {
+      return `scale(1, ${y(d.length)})`
     });
 
     if(!config.domain) {
@@ -127,8 +137,8 @@ export default function Histogram(on, style, config) {
   };
   update.mark = function(a){
     elapsedTime.mark(a);
-    if(elapsedTime.aveLap.history.length)
-      update(elapsedTime.aveLap.history);
+    if(!elapsedTime.aveLap.history.length) return;
+    update(elapsedTime.aveLap.history);
   };
   update.start = function(aveWindow){elapsedTime.start(aveWindow)};
   update.selection = select(on);
