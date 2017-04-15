@@ -12,7 +12,6 @@ g.plot rect{
     -moz-transition: all 0.1s linear;
     -o-transition: all 0.1s linear;
     transition: all 0.1s linear;
-    outline: 1px red;
 }
 #histogram {
     margin: 0 0 0 0;

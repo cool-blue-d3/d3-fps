@@ -28,15 +28,21 @@
     "d3-random": "^1.0.3",
     "mocha": "^3.2.0",
     "rollup": "^0.41.6",
+    "rollup-plugin-bundle-worker": "^0.1.0",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-postcss": "^0.2.0"
+    "rollup-plugin-postcss": "^0.2.0",
+    "rollup-plugin-replace": "^1.1.1",
+    "rollup-plugin-uglify": "^1.0.1"
   },
   "dependencies": {
     "d3-array": "^1.1.1",
     "d3-axis": "^1.0.6",
+    "d3-dispatch": "^1.0.3",
     "d3-format": "^1.1.1",
     "d3-scale": "^1.0.5",
     "d3-selection": "^1.0.5",
-    "d3-selection-multi": "^1.0.1"
+    "d3-selection-multi": "^1.0.1",
+    "requirejs": "^2.3.3",
+    "tinycolor": "0.0.1"
   }
 }
