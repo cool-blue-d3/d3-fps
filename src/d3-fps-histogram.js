@@ -28,8 +28,7 @@ export default function Histogram(on, style, config) {
                 "white-space": "pre",
                 position: "relative"
             }),
-        currentWrapper,
-        wrapper = select(document.createElement("div"))  // detached wrapper
+        wrapper = posnContext
             .attr("id", "wrapper")
             .styles({position: "absolute"}),
         hist = wrapper.append("div")
@@ -39,11 +38,15 @@ export default function Histogram(on, style, config) {
             .styles({overflow: "visible", margin: 0})
             .attrs(config),
         elapsedTime = ElapsedTime(on, messageStyle)
-            .message(function (value) {
-                let this_lap = elapsedTime.lap().lastLap, aveLap = elapsedTime.aveLap(this_lap);
-                return (aveLap ? format(" >5,.1f")(1 / aveLap) : format(" >5c")(" ")) + " fps\t" +
-                    _message.call(elapsedTime, value, this_lap, aveLap);
-            }),
+            .message(function (value, resolve) {
+                window.setTimeout(() => {
+                        let this_lap = elapsedTime.lap().lastLap, aveLap = elapsedTime.aveLap(this_lap);
+                        resolve((aveLap ? format(" >5,.1f")(1 / aveLap) : format(" >5c")(" ")) + " fps\t" +
+                            _message.call(elapsedTime, value, this_lap, aveLap));
+                    }
+                )
+            })
+            .window(config.window),
         plot = hist.append("g")
             .attrs(transplot(config.height))
             .classed("plot", true)
@@ -73,6 +76,8 @@ export default function Histogram(on, style, config) {
                 id: "xColor", x1: "0%", y1: "0%", x2: "100%", y2: "0%",
                 gradientUnits: "userSpaceOnUse"
             });
+    
+    elapsedTime.start();
 
     gradient.append("stop")
         .attrs({"offset": "0%", "stop-color": "red"});
@@ -167,13 +172,13 @@ export default function Histogram(on, style, config) {
         // if(done) return;
         // if(currentWrapper)
         //   window.requestAnimationFrame(currentWrapper.remove.bind(currentWrapper));
-        currentWrapper = posnContext.append(() => wrapper.node())
+        // currentWrapper = posnContext.append(() => wrapper.node())
     }
 
-    function preRender() {
-        if (currentWrapper)
-            currentWrapper.remove();
-    }
+    // function preRender() {
+    //     if (currentWrapper)
+    //         currentWrapper.remove();
+    // }
 
     update.svg = hist;
     update.message = function (f) {

@@ -5,7 +5,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import replace from 'rollup-plugin-replace';
 import bundleWorker from 'rollup-plugin-bundle-worker';
-import uglify from 'rollup-plugin-uglify';
+// import uglify from 'rollup-plugin-uglify';
 
 export default {
   entry: 'index.js',
@@ -21,7 +21,7 @@ export default {
       exclude: 'node_modules/**',
       ENV: JSON.stringify(process.env.NODE_ENV || 'production'),
     }),
-    (process.env.NODE_ENV === 'production' && uglify()),
+    // (process.env.NODE_ENV === 'production' && uglify()),
     bundleWorker({include: 'worker'}),
   ]
 };
