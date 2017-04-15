@@ -38,13 +38,12 @@ export default function Histogram(on, style, config) {
             .styles({overflow: "visible", margin: 0})
             .attrs(config),
         elapsedTime = ElapsedTime(on, messageStyle)
-            .message(function (value, resolve) {
-                window.setTimeout(() => {
+            .message(function (value) {
+                return new Promise((resolve, reject) => {
                         let this_lap = elapsedTime.lap().lastLap, aveLap = elapsedTime.aveLap(this_lap);
                         resolve((aveLap ? format(" >5,.1f")(1 / aveLap) : format(" >5c")(" ")) + " fps\t" +
                             _message.call(elapsedTime, value, this_lap, aveLap));
-                    }
-                )
+                })
             })
             .window(config.window),
         plot = hist.append("g")

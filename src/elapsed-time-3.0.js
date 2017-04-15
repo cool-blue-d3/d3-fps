@@ -57,11 +57,10 @@ import 'd3-selection-multi'
                 var i = arguments.length;
                 var args = [];
                 while (i--) args[i] = arguments[i];
-                new Promise((resolve, reject) => {
-                    _message.apply(context, args.concat([resolve]));
-                }).then(m =>
+                Promise.resolve(_message.apply(context, args))
+                    .then(m =>
                     window.requestAnimationFrame(() => context.selection.text(m))
-                );
+                ).catch(e => {throw e});
                 return this
             };
             this.message = function (f) {
