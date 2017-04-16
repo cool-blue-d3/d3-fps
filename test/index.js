@@ -19,7 +19,7 @@ let container = select('#container'),
             return 1 / d
         },
         domain: [0, 60],
-        window: 100
+        window: 500
     }),
     containerWidth = 960,
     containerHeight = 470 - hist.selection.node().clientHeight,

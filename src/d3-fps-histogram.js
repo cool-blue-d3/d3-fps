@@ -85,7 +85,6 @@ export default function Histogram(on, style, config) {
     gradient.append("stop")
         .attrs({"offset": "100%", "stop-color": "green"});
 
-    const _env = ENV;
     const getData = ENV === "Test" ? testData : () => {
         return elapsedTime.aveLap.history;
     };
@@ -99,7 +98,7 @@ export default function Histogram(on, style, config) {
             xG.call(xAxis);
         }
         let y = scaleLinear()
-            .range([0, 1]);
+            .range([0, config.height]);
 
         let h;
         // let histWorker = new HistWorker();
@@ -140,10 +139,8 @@ export default function Histogram(on, style, config) {
                         width: function (d) {
                             return x(d.x1 - d.x0)
                         },
-                        height: config.height
-                    })
-                    .style('transform', 'scale(1,0)');
-            // (config.domain ? enter : enter.merge(bars))
+                    });
+
             enter.merge(bars).attrs({
                 x: function (d) {
                     return x(d.x0)
@@ -152,8 +149,8 @@ export default function Histogram(on, style, config) {
 
             bars.exit().remove();
 
-            bars.style("transform", function (d) {
-                return `scale(1, ${y(d.length)})`
+            bars.attr("height", function (d) {
+                return y(d.length)
             });
 
             if (!config.domain) {
